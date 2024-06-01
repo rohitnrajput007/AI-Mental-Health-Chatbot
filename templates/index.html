@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friend in Need - AI</title>
+<!--    <link rel="stylesheet" href="MindMender-main\styles.css">-->
+    <style>
+        /* Style the chat container */
+
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.bot-container {
+    height: 100vh;
+    width: 90vw;
+    padding: 20px 0 10px;
+    background-color: #1F1B24;
+    /* border: 1px solid mediumorchid; */
+}
+
+.main {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+}
+
+.menu {
+    height: 81.4%;
+    width: 20%;
+    background-color: #121212;
+    text-align: center;
+    padding: 5rem 5px 5rem 0;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    letter-spacing: 2px;
+    display: list-item;
+    padding: 2rem;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.menu a:hover {
+    background-color: rgb(238, 155, 0);
+    transition: 0.5sec;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+
+/* Style the chat header */
+
+.header {
+    font-size: 40px;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: left;
+    padding-left: 2rem;
+    background-color: #1F1B24;
+}
+
+.online {
+    font-size: 14px;
+    padding-left: 4rem;
+}
+
+.img {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 8rem;
+    margin-right: 1rem;
+}
+
+.img-text {
+    display: flex;
+}
+
+
+/* Style the chat log area */
+
+.chat-box {
+    max-height: 100vh;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+    color: #fff;
+    border-radius: 5px;
+    background-color: #716D6D;
+}
+
+
+/* Style the user input section */
+
+.user-input {
+    /* margin-top: 10px; */
+    display: flex;
+    /* align-items: center; */
+    margin-top: 30.5rem;
+}
+
+
+/* Style the user message input field */
+
+#user-chat {
+    height: 3rem;
+    flex: 1;
+    border: 1px solid #000000;
+    background-color: #1F1B24;
+    width: 60vh;
+    color: white;
+}
+
+
+/* Style the send button */
+
+#send-button {
+                                        padding: 5px 10px;
+                                        background-color: #1F1B24;
+                                        color: white;
+                                        border: 1px solid #000000;
+                                        cursor: pointer;
+                                    }
+ .body-message {
+                                    background-color: #1F1B24;
+                                    color: white;
+                                    height: 100%;
+                                    width: 80%;
+                                    padding-top: 20rem;
+                                    padding-left: 20rem;
+                                    font-size: large;
+
+input[type="text"] {
+    margin-right: 5px;
+}
+
+i {
+    color: darkmagenta;
+}
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="menu">
+
+           <a href="http://127.0.0.1:5000">Home</a>
+            <a href="messages.html">Message</a>
+            <a href="support.html">Support</a>
+            <a href="aboutus.html">About us</a>
+
+        </div>
+        <div class="body">
+            <div class="bot-container">
+                <div class="header">
+                    <div class="img-text"> <img class="img" src="static/chatbotimg.jpg" alt=""> Chatbot</div>
+
+                    <h6 class="online">
+                        🟢Always online</h6>
+                </div>
+                <div class="chat-box" id="chat-box">
+                    <!-- Chat messages will be displayed here -->
+                    <p>Welcome</p>
+                </div>
+                <div class="user-input input-group mb-3">
+                    <input type="text" id="user-chat" placeholder="Type your message..." name="input-source" onkeypress="handleKeyPress(event)">
+                    <span class="input-group-text" style="border: 1px solid darkmagenta; border-radius: 5px"><i class="fa-solid fa-microphone"value="2" ></i></span>
+                    <button id="send-button" onclick="sendUserMessage()">Send<i class="fa-solid fa-circle-arrow-right"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script >
+        // Function to display messages in the chat interface
+function displayMessage(sender, message) {
+    var chatBox = document.getElementById('chat-box');
+    var messageElement = document.createElement('div');
+    messageElement.className = sender === 'Fin-AI' ? 'bot-message' : 'user-message'; // Differentiate between bot and user messages
+    messageElement.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatBox.appendChild(messageElement);
+}
+
+// Function to send a user message to the server and display the response
+function sendUserMessage() {
+    // Get the user's message from the input field
+    var userMessage = document.getElementById('user-chat').value;
+
+    // Check if the user's message is empty
+    if (!userMessage) {
+        return;
+    }
+
+    // Display the user's message in the chat interface
+    displayMessage('You', userMessage);
+
+    // Create an object with the user's message
+    var requestData = {
+        user_message: userMessage
+    };
+
+    // Send the user's message to the server using a POST request
+    fetch('/get_response', {
+        method: 'POST',
+        body: JSON.stringify(requestData), // Include user message
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Display the response from the server in the chat interface
+        var botResponse = data.bot_response;
+        displayMessage('Fin-AI', botResponse);
+    })
+    .catch(error => console.error(error));
+
+    // Clear the input field
+    document.getElementById('user-chat').value = '';
+}
+
+// Add event listener for the "Send" button or another trigger to send messages
+document.getElementById('send-button').addEventListener('click', sendUserMessage);
+
+// Add event listener for the "Enter" key to send messages
+document.getElementById('user-chat').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        sendUserMessage();
+    }
+});
+
+    </script>
+
+</body>
+
+</html>
